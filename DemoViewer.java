@@ -63,6 +63,12 @@ public class DemoViewer {
 
                 BufferedImage img = new BufferedImage(getWidth(), getHeight(), BufferedImage.TYPE_INT_ARGB);
 
+                double[] zBuffer = new double[img.getWidth() * img.getHeight()];
+                // initialize arrray with extremely far away depths
+                for (int q = 0; q < zBuffer.length; q++) {
+                    zBuffer[q] = Double.NEGATIVE_INFINITY;
+                }
+
                 for (Triangle t : tris) {
                     Vertex v1 = transform.transform(t.v1);
                     Vertex v2 = transform.transform(t.v2);
@@ -93,7 +99,12 @@ public class DemoViewer {
                             double b3 = 
                                 ((y - v2.y) * (v1.x - v2.x) + (v1.y - v2.y) * (v2.x - x)) / triangleArea;
                             if (b1 >= 0 && b1 <= 1 && b2 >= 0 && b2 <= 1 && b3 >= 0 && b3 <= 1) {
-                                img.setRGB(x, y, t.color.getRGB());
+                                double depth = b1 * v1.z + b2 * v2.z + b3 * v3.z;
+                                int zIndex = y * img.getWidth() + x;
+                                if (zBuffer[zIndex] < depth) {
+                                    img.setRGB(x, y, t.color.getRGB());
+                                    zBuffer[zIndex] = depth;
+                                }
                             }
                         }
                     }
