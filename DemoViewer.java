@@ -1,7 +1,11 @@
 import java.awt.*;
+import java.awt.geom.*;
+import java.util.ArrayList;
+import java.util.List;
 import javax.swing.*;
 
 public class DemoViewer {
+
 
     public static void main(String[] args) {
         JFrame frame = new JFrame();
@@ -23,7 +27,35 @@ public class DemoViewer {
                 g2.setColor(Color.BLACK);
                 g2.fillRect(0, 0, getWidth(), getHeight());
 
-                // rendering magic will happen here 
+                List<Triangle> tris = new ArrayList<>();
+                tris.add(new Triangle(new Vertex(100, 100, 100),
+                          new Vertex(-100, -100, 100),
+                          new Vertex(-100, 100, -100),
+                          Color.WHITE));
+                tris.add(new Triangle(new Vertex(100, 100, 100),
+                          new Vertex(-100, -100, 100),
+                          new Vertex(100, -100, -100),
+                          Color.RED));
+                tris.add(new Triangle(new Vertex(-100, 100, -100),
+                          new Vertex(100, -100, -100),
+                          new Vertex(100, 100, 100),
+                          Color.GREEN));
+                tris.add(new Triangle(new Vertex(-100, 100, -100),
+                          new Vertex(100, -100, -100),
+                          new Vertex(-100, -100, 100),
+                          Color.BLUE));
+
+                g2.translate(getWidth() / 2, getHeight() / 2);
+                g2.setColor(Color.WHITE);
+                for (Triangle t : tris) {
+                    Path2D path = new Path2D.Double();
+                    path.moveTo(t.v1.x, t.v1.y);
+                    path.lineTo(t.v2.x, t.v2.y);
+                    path.lineTo(t.v3.x, t.v3.y);
+                    path.closePath();
+                    g2.draw(path);
+                }
+
             }
         };
         pane.add(renderPanel, BorderLayout.CENTER);
@@ -33,3 +65,29 @@ public class DemoViewer {
 
     }
 }
+
+class Vertex {
+    double x;
+    double y;
+    double z;
+
+    public Vertex(double x, double y, double z) {
+        this.x = x;
+        this.y = y;
+        this.z = z;
+    }
+}
+
+class Triangle {
+    Vertex v1;
+    Vertex v2;
+    Vertex v3;
+    Color color;
+    Triangle(Vertex v1, Vertex v2, Vertex v3, Color color) {
+        this.v1 = v1;
+        this.v2 = v2;
+        this.v3 = v3;
+        this.color = color;
+    }
+}
+
